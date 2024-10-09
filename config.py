@@ -37,11 +37,8 @@ config_args = {
         'num-layers': (2, 'number of hidden layers in encoder'),
         'bias': (1, 'whether to use bias (1) or not (0)'),
         'act': ('relu', 'which activation function to use (or None for no activation)'),
-        'n-heads': (4, 'number of attention heads for graph attention networks, must be a divisor dim'),
         'alpha': (0.2, 'alpha for leakyrelu in graph attention networks'),
-        'double-precision': ('0', 'whether to use double precision'),
-        'use-att': (0, 'whether to use hyperbolic attention or not'),
-        'local-agg': (0, 'whether to local tangent space aggregation or not')
+        'double-precision': ('0', 'whether to use double precision')
     },
     'data_config': {
         'dataset': ('PubMed', 'which dataset to use'),

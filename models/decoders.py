@@ -22,7 +22,6 @@ class Decoder(nn.Module):
             probs = self.cls.forward(x)
         return probs
 
-
 class GCNDecoder(Decoder):
     """
     Graph Convolution Decoder.
@@ -49,12 +48,6 @@ class LinearDecoder(Decoder):
         self.decode_adj = False
 
     def decode(self, x, adj):
-        
-        #Old:
-        #h = self.manifold.proj_tan0(self.manifold.logmap0(x, c=self.c), c=self.c)
-        #return super(LinearDecoder, self).decode(h, adj)
-        
-        #New:
         return super(LinearDecoder, self).decode(x, adj)
         
 

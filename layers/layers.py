@@ -23,66 +23,42 @@ def get_dim_act(args):
 
 class GraphConvolution(nn.Module):
     """
-    Simple GCN layer.
+    Simple Graph Convolutional Network (GCN) layer.
+    
+    Parameters:
+    -----------
+    in_features : int
+        Number of input features for each node.
+    out_features : int
+        Number of output features for each node.
+    dropout : float
+        Dropout rate to apply during training.
+    act : callable
+        Activation function (e.g., `torch.nn.ReLU()`).
+    use_bias : bool
+        Whether to use bias in GCNConv layer.
     """
 
-    '''
-    def __init__(self, in_features, out_features, dropout, act, use_bias):
+    def __init__(self, in_features, out_features, dropout, act, use_bias=True):
         super(GraphConvolution, self).__init__()
-        self.dropout = dropout
-        self.linear = nn.Linear(in_features, out_features, use_bias)
-        self.act = act
         self.in_features = in_features
         self.out_features = out_features
+        self.dropout = dropout
+        self.act = act
+        self.conv = GCNConv(in_channels=in_features, 
+                            out_channels=out_features,
+                            add_self_loops=False,
+                            normalize=True,
+                            bias=use_bias)
 
     def forward(self, input):
         x, adj = input
-        hidden = self.linear.forward(x)
-        hidden = F.dropout(hidden, self.dropout, training=self.training)
-        if adj.is_sparse:            
-            support = torch.spmm(adj, hidden)
-        else:
-            support = torch.mm(adj, hidden)
-        output = self.act(support), adj
-        return output
-
+        x_out = self.conv(x, adj)  
+        x_out = self.act(x_out)    
+        x_out = F.dropout(x_out, self.dropout, training=self.training)  
+        return x_out, adj  
+    
     def extra_repr(self):
         return 'input_dim={}, output_dim={}'.format(
                 self.in_features, self.out_features
         )
-    '''
-
-    def __init__(self, in_features, out_features, dropout, act, use_bias):
-        super(GraphConvolution, self).__init__()
-        self.dropout = dropout
-        self.act = act
-        self.conv = GCNConv(in_features, out_features)
-
-    def forward(self, input):
-        x, adj = input
-        xt = self.conv(x, adj)
-        xt = self.act(xt)
-        output = F.dropout(xt, self.dropout, training=self.training), adj
-        return output
-
-    def extra_repr(self):
-        return 'input_dim={}, output_dim={}'.format(
-                self.in_features, self.out_features
-        )
-
-class Linear(nn.Module):
-    """
-    Simple Linear layer with dropout.
-    """
-
-    def __init__(self, in_features, out_features, dropout, act, use_bias):
-        super(Linear, self).__init__()
-        self.dropout = dropout
-        self.linear = nn.Linear(in_features, out_features, use_bias)
-        self.act = act
-
-    def forward(self, x):
-        hidden = self.linear.forward(x)
-        hidden = F.dropout(hidden, self.dropout, training=self.training)
-        out = self.act(hidden)
-        return out

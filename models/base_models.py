@@ -105,12 +105,8 @@ class LPModel(BaseModel):
         emb_in = h[idx[:, 0], :]
         emb_out = h[idx[:, 1], :]
         
-        #New:
         sqdist = self.manifold.sqdist_euclidean(emb_in, emb_out, self.c)
-        
-        #Old:
-        #sqdist = self.manifold.sqdist(emb_in, emb_out, self.c)
-        
+            
         probs = self.decoder.forward(sqdist)
         return probs
         
