@@ -77,4 +77,3 @@ model2decoder = {
     'GCN': GCNDecoder,
     'HGCN': LinearDecoder
 }
-

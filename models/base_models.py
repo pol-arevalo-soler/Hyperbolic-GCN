@@ -78,7 +78,15 @@ class NCModel(BaseModel):
         loss = F.nll_loss(output, data['labels'][idx], self.weights)
         acc, f1 = acc_f1(output, data['labels'][idx], average=self.f1_average)
         metrics = {'loss': loss, 'acc': acc, 'f1': f1}
+
         return metrics
+    
+    def compute_all_labels(self, embeddings, adj):
+        output = self.decoder.decode(embeddings, adj)
+        log_probs = F.log_softmax(output, dim=1)
+        predicted_labels = torch.argmax(log_probs, dim=1) 
+
+        return predicted_labels 
 
     def init_metric_dict(self):
         return {'acc': -1, 'f1': -1}

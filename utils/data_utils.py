@@ -31,7 +31,7 @@ def load_data(args, datapath):
     return data
 
 
-# ############### FEATURES PROCESSING ####################################
+################# FEATURES PROCESSING ####################################
 
 
 def process(adj, features, normalize_adj, normalize_feats):

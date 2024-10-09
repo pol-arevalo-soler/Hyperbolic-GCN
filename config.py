@@ -25,7 +25,7 @@ config_args = {
         'min-epochs': (100, 'do not early stop before min-epochs')
     },
     'model_config': {
-        'task': ('lp', 'which tasks to train on, can be any of [lp, nc]'),
+        'task': ('nc', 'which tasks to train on, can be any of [lp, nc]'),
         'model': ('GCN', 'which encoder to use, can be any of [Shallow, MLP, HNN, GCN, GAT, HyperGCN]'),
         'dim': (128, 'embedding dimension'),
         'manifold': ('Euclidean', 'which manifold to use, can be any of [Euclidean, Hyperboloid, PoincareBall]'),
@@ -41,7 +41,7 @@ config_args = {
         'double-precision': ('0', 'whether to use double precision')
     },
     'data_config': {
-        'dataset': ('PubMed', 'which dataset to use'),
+        'dataset': ('cora', 'which dataset to use'),
         'val-prop': (0.05, 'proportion of validation edges for link prediction'),
         'test-prop': (0.1, 'proportion of test edges for link prediction'),
         'use-feats': (1, 'whether to use node features or not'),
