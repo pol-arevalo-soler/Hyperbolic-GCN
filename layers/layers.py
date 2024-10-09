@@ -62,3 +62,48 @@ class GraphConvolution(nn.Module):
         return 'input_dim={}, output_dim={}'.format(
                 self.in_features, self.out_features
         )
+
+class Linear(nn.Module):
+    """
+    Simple Linear layer with dropout.
+
+    Parameters:
+    -----------
+    in_features : int
+        Number of input features (dimension of input).
+    out_features : int
+        Number of output features (dimension of output).
+    dropout : float
+        Dropout rate for regularization (between 0 and 1).
+    act : callable
+        Activation function to apply after the linear transformation. 
+        Common choices are F.relu, F.sigmoid, etc.
+    use_bias : bool
+        Whether to use a bias term in the linear layer.
+    """
+
+    def __init__(self, in_features, out_features, dropout=0.0, act=F.relu, use_bias=True):
+        super(Linear, self).__init__()
+        self.dropout = dropout
+        self.linear = nn.Linear(in_features, out_features, bias=use_bias) 
+        self.act = act
+
+    def forward(self, x):
+        """
+        Forward pass through the linear layer with dropout and activation.
+
+        Parameters:
+        -----------
+        x : torch.Tensor
+            Input tensor of shape (N, in_features), where N is the batch size.
+
+        Returns:
+        --------
+        torch.Tensor
+            Output tensor of shape (N, out_features) after applying the linear transformation, 
+            dropout, and activation function.
+        """
+        hidden = self.linear(x)  
+        hidden = F.dropout(hidden, self.dropout, training=self.training)
+        out = self.act(hidden)
+        return out

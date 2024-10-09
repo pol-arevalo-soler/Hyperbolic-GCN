@@ -50,7 +50,6 @@ class LinearDecoder(Decoder):
     def decode(self, x, adj):
         return super(LinearDecoder, self).decode(x, adj)
         
-
     def extra_repr(self):
         return 'in_features={}, out_features={}, bias={}, c={}'.format(
                 self.input_dim, self.output_dim, self.bias, self.c
@@ -69,6 +68,10 @@ class FermiDiracDecoder(nn.Module):
     def forward(self, dist):
         probs = 1. / (torch.exp((dist - self.r) / self.t) + 1.0)
         return probs
+    
+    def extra_repr(self):
+        """Additional information regarding decoder."""
+        return 'r={}, t={}'.format(self.r, self.t)
 
 model2decoder = {
     'GCN': GCNDecoder,

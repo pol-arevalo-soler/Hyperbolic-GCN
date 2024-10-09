@@ -91,7 +91,7 @@ def train(args):
         t = time.time()
         model.train()
         optimizer.zero_grad()
-        embeddings = model.encode(data['features'], data['adj_train_norm'], args.old)
+        embeddings = model.encode(data['features'], data['adj_train_norm'])
         train_metrics = model.compute_metrics(embeddings, data, 'train')
         train_metrics['loss'].backward()
         if args.grad_clip is not None:
@@ -103,13 +103,13 @@ def train(args):
         lr_scheduler.step()
         if (epoch + 1) % args.log_freq == 0:
             logging.info(" ".join(['Epoch: {:04d}'.format(epoch + 1),
-                                   'lr: {}'.format(lr_scheduler.get_lr()[0]),
+                                   'lr: {}'.format(lr_scheduler.get_last_lr()[0]),
                                    format_metrics(train_metrics, 'train'),
                                    'time: {:.4f}s'.format(time.time() - t)
                                    ]))
         if (epoch + 1) % args.eval_freq == 0:
             model.eval()
-            embeddings = model.encode(data['features'], data['adj_train_norm'], args.old)
+            embeddings = model.encode(data['features'], data['adj_train_norm'])
             val_metrics = model.compute_metrics(embeddings, data, 'val')
             if (epoch + 1) % args.log_freq == 0:
                 logging.info(" ".join(['Epoch: {:04d}'.format(epoch + 1), format_metrics(val_metrics, 'val')]))
@@ -130,6 +130,7 @@ def train(args):
         torch.cuda.synchronize()
     logging.info("Optimization Finished!")
     logging.info("Total time elapsed: {:.4f}s".format(time.time() - t_total))
+    logging.info("Total epochs: {} epochs".format(int(epoch)))
     if not best_test_metrics:
         model.eval()
         best_emb = model.encode(data['features'], data['adj_train_norm'])

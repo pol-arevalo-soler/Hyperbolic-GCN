@@ -24,7 +24,7 @@ class BaseModel(nn.Module):
         if self.manifold.name == 'Hyperboloid':
             args.feat_dim = args.feat_dim + 1
         self.nnodes = args.n_nodes
-        self.encoder = getattr(encoders, args.model)(self.c, args)
+        self.encoder = getattr(encoders, args.model)(args)
         # Pick curvature of the last layer
         if args.model == 'HGCN':
             self.c = self.encoder.curvatures[args.num_layers-1]
@@ -35,11 +35,11 @@ class BaseModel(nn.Module):
         else:
             self.decoder = FermiDiracDecoder(r=args.r, t=args.t)
 
-    def encode(self, x, adj, old):
+    def encode(self, x, adj):
         if self.manifold.name == 'Hyperboloid':
             o = torch.zeros_like(x)
             x = torch.cat([o[:, 0:1], x], dim=1)
-        h = self.encoder.encode(x, adj, old)
+        h = self.encoder.encode(x, adj)
         return h
     
     def compute_metrics(self, embeddings, data, split):
@@ -134,4 +134,3 @@ class LPModel(BaseModel):
 
     def has_improved(self, m1, m2):
         return 0.5 * (m1['roc'] + m1['ap']) < 0.5 * (m2['roc'] + m2['ap'])
-

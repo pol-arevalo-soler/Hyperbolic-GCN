@@ -1,4 +1,3 @@
-"""Graph encoders."""
 import torch.nn as nn
 
 import manifolds
@@ -7,7 +6,20 @@ from layers.layers import GraphConvolution, get_dim_act
 
 class Encoder(nn.Module):
     """
-    Encoder abstract class.
+    Abstract base class for graph encoders.
+    
+    Methods:
+    --------
+    encode(x, adj):
+        Encodes the input node features and adjacency matrix by passing 
+        them through the encoder layers.
+
+    Attributes:
+    -----------
+    layers: nn.Sequential 
+        This holds the actual layers of the encoder (e.g., graph convolutional 
+        layers), which need to be defined in a subclass. The input is propagated
+        through these layers to produce the output embeddings.
     """
 
     def __init__(self):
@@ -21,10 +33,32 @@ class Encoder(nn.Module):
 
 class GCN(Encoder):
     """
-    Graph Convolution Networks.
+    Graph Convolution Networks (GCN).
+    Parameters:
+    -----------
+    c : float
+        A curvature parameter (used for hyperbolic embeddings, if applicable).
+    args : Namespace
+        A namespace object containing hyperparameters for the GCN, including:
+            - num_layers (int): Number of layers in the GCN.
+            - dropout (float): Dropout rate for regularization.
+            - bias (bool): Whether to include a bias term in the convolutional layers.
+
+    Attributes:
+    -----------
+    layers : nn.Sequential
+        A sequential container that holds the GraphConvolution layers. Each layer 
+        transforms the input node features according to the specified dimensions 
+        and activation functions.
+
+    Methods:
+    --------
+    encode(x, adj):
+        Encodes the input node features and adjacency matrix by passing 
+        them through the graph convolution layers.
     """
 
-    def __init__(self, c, args):
+    def __init__(self, args):
         super(GCN, self).__init__()
         assert args.num_layers > 0, "Number of layers must be greater than 0."
         dims, acts = get_dim_act(args)
@@ -44,7 +78,34 @@ class GCN(Encoder):
 
 class HGCN(Encoder):
     """
-    Hyperbolic-GCN.
+    Hyperbolic Graph Convolutional Network (HGCN).
+
+    Parameters:
+    -----------
+    args : Namespace
+        A namespace object containing hyperparameters for the HGCN, including:
+            - manifold (str): The type of manifold to use for hyperbolic geometry.
+            - num_layers (int): Number of layers in the HGCN.
+            - dropout (float): Dropout rate for regularization.
+            - bias (bool): Whether to include a bias term in the convolutional layers.
+
+    Attributes:
+    -----------
+    manifold : Manifold
+        The manifold object that defines the hyperbolic space used in the model.
+    layers : nn.Sequential
+        A sequential container that holds the HyperbolicGraphConvolution layers. 
+        Each layer transforms the input node features according to the specified 
+        dimensions and activation functions.
+    curvatures : list of float
+        A list of curvature parameters for each layer, defining the hyperbolic
+        geometry characteristics.
+
+    Methods:
+    --------
+    encode(x, adj):
+        Encodes the input node features and adjacency matrix by passing 
+        them through the hyperbolic graph convolution layers.
     """
 
     def __init__(self, args):
@@ -57,12 +118,12 @@ class HGCN(Encoder):
             *[
                 hyp_layers.HyperbolicGraphConvolution(
                     self.manifold,
-                    in_dim=dims[i],
-                    out_dim=dims[i + 1],
+                    in_features=dims[i],
+                    out_features=dims[i + 1],
                     c=self.curvatures[i],
                     dropout=args.dropout,
                     act=acts[i],
-                    bias=args.bias
+                    use_bias=args.bias
                 )
                 for i in range(len(dims) - 1)
             ]

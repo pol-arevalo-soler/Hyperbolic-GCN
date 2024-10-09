@@ -245,7 +245,7 @@ def load_synthetic_data(dataset_str, use_feats, data_path):
 def load_data_airport(dataset_str, data_path, return_label=False):
     graph = pkl.load(open(os.path.join(data_path, dataset_str + '.p'), 'rb'))
     adj = nx.adjacency_matrix(graph)
-    features = np.array([graph.node[u]['feat'] for u in graph.nodes()])
+    features = np.array([graph.nodes[u]['feat'] for u in graph.nodes()])
     if return_label:
         label_idx = 4
         labels = features[:, label_idx]

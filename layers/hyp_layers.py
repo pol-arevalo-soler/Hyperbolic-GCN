@@ -69,12 +69,6 @@ class HyperbolicGraphConvolution(nn.Module):
         output = h, adj
         return output
 
-import torch
-import torch.nn as nn
-import torch.nn.functional as F
-import math
-import torch.nn.init as init
-
 class HypLinear(nn.Module):
     """
     Hyperbolic linear layer.
@@ -126,7 +120,7 @@ class HypLinear(nn.Module):
         """Forward pass for the hyperbolic linear layer."""
         drop_weight = F.dropout(self.weight, self.dropout, training=self.training)
         
-        # Möbius matrix-vector multiplication in hyperbolic space
+        # Möbius matrix-vector multiplication
         mv = self.manifold.mobius_matvec(drop_weight, x, self.c)
         res = self.manifold.proj(mv, self.c)  
         
