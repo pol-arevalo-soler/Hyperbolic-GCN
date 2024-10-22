@@ -12,23 +12,41 @@ All models can be trained for:
 
 ## 2. Setup
 
-### 2.1 Installation with conda
+### 2.1 Clone GitHub repository
+
+This section provides step-by-step instructions on how to clone the GitHub repository for this project.
+
+### Prerequisites
+
+Before cloning the repository, ensure that you have the following installed on your machine:
+
+- **Git**: A version control system to manage your source code. You can download and install Git from the official [Git website](https://git-scm.com/downloads).
+
+```git clone https://github.com/pol-arevalo-soler/hgcn.git```
+
+```cd hgcn```
+
+### 2.2 Installation with conda
+
+### Prerequisites
 
 If you don't have conda installed, please install it following the instructions [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
-```git clone https://github.com/pol-arevalo-soler/hgcn.git```
-
-```cd hgcn```
+### Create conda environment
 
 ```conda env create -f environment.yml```
 
-### 2.2 Installation with pip
+### 2.3 Installation with pip
 
-Alternatively, if you prefer to install dependencies with pip, please follow the instructions below:
+Alternatively, if you prefer to install dependencies using `pip`, follow the steps below to set up your environment:
 
-```git clone https://github.com/pol-arevalo-soler/hgcn.git```
+### Prerequisites
 
-```cd hgcn```
+- **Python 3.11**: Ensure that Python 3.11 is installed on your system. You can download it from the official [Python website](https://www.python.org/downloads/).
+- **pip**: `pip` usually comes pre-installed with Python. You can verify its installation by running:
+  ```pip --version```
+
+### Create virtual environment
 
 ```virtualenv -p [PATH to python3.11 binary] hgcn```
 
