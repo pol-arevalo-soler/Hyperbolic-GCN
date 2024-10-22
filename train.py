@@ -79,6 +79,7 @@ def train(args):
     tot_params = sum([np.prod(p.size()) for p in model.parameters()])
     logging.info(f"Total number of parameters: {tot_params}")
 
+    '''
     # Visualization
     # Create plots folder if not exists
     if not os.path.exists('plots'):
@@ -101,7 +102,8 @@ def train(args):
     if args.task == 'nc':
         title = f"{args.dataset}_source.png"
         visualize(data['features'], data['labels'], folder_path, title, True)
-
+    '''
+        
     # Train model
     if 'cuda' in args.device:
         torch.cuda.synchronize()
@@ -161,6 +163,7 @@ def train(args):
     logging.info(" ".join(["Val set results:", format_metrics(best_val_metrics, 'val')]))
     logging.info(" ".join(["Test set results:", format_metrics(best_test_metrics, 'test')]))
     
+    '''
     # Visualization
     if args.task == 'nc':
         title = f"{args.dataset}_groundtruth.png"
@@ -172,7 +175,8 @@ def train(args):
         
         title = f"{args.dataset}_predicted-original.png"
         visualize(data['features'], preds, folder_path, title, True)
-
+    '''
+        
     # Save embeddings and model
     if args.save:
         np.save(os.path.join(save_dir, 'embeddings.npy'), best_emb.cpu().detach().numpy())
