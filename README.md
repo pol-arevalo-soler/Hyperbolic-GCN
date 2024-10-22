@@ -1,4 +1,4 @@
-Hyperbolic Graph Convolutional Networks in PyTorch
+Simplified Hyperbolic Graph Convolutional Networks in PyTorch
 ==================================================
 
 ## 1. Overview
@@ -26,7 +26,11 @@ If you don't have conda installed, please install it following the instructions 
 
 Alternatively, if you prefer to install dependencies with pip, please follow the instructions below:
 
-```virtualenv -p [PATH to python3.7 binary] hgcn```
+```git clone https://github.com/pol-arevalo-soler/hgcn.git```
+
+```cd hgcn```
+
+```virtualenv -p [PATH to python3.11 binary] hgcn```
 
 ```source hgcn/bin/activate```
 
@@ -58,23 +62,26 @@ This will create environment variables that are used in the code.
 This script trains models for link prediction and node classification tasks. 
 Metrics are printed at the end of training or can be saved in a directory by adding the command line argument ```--save=1```.
 
-## 4. Examples
+## 4. Reproducibility and Examples
 
-We provide examples of training commands used to train HGCN and other graph embedding models for link prediction and node classification. In the examples below, we used a fixed random seed set to 1234 for reproducibility purposes. Note that results might slightly vary based on the machine used. To reproduce results in the paper, run each commad for 10 random seeds and average the results.
+We provide examples of training commands used to train sHGCN and HGCN-ATT<sub>0</sub> for link prediction and node classification. To reproduce the results in this paper, run each command for 10 random seeds (from 0 to 9) and average the results. Note that our results are obtained using a GPU for these seeds, and may vary slightly based on the machine used.
 
-### 4.1 Training HGCN
+### 4.1 Training sHGCN
 
 #### Link prediction
 
-  * Disease (Test ROC-AUC= ):
+  * Disease (Test ROC-AUC = 94.6 $\pm$ 0.6): <br>
+  ```python3 train.py --task lp --dataset disease_lp --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.2 --r 0.0 --t 1.0```
 
-  * Airport (Test ROC-AUC=):
+  * Airport (Test ROC-AUC = 94.7 $\pm$ 0.4): <br>
+  ```python3 train.py --task lp --dataset airport --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.1 --r 2.0 --t 1.0```
 
-  * Pubmed (Test ROC-AUC= ):
+  * Pubmed (Test ROC-AUC = 95.7 $\pm$ 0.3): <br>
+  ```python3 train.py --task lp --dataset pubmed --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.4 --weight-decay 0.0001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0```
 
-  * Cora (Test ROC-AUC= ): 
+  * Cora (Test ROC-AUC = 93.4 $\pm$ 0.4): <br>
+  ```python3 train.py --task lp --dataset disease_lp --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 1.0 --t 1.0```
 
-```python train.py --task lp --dataset cora --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.5 --weight-decay 0.001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
 #### Node classification
 
@@ -90,17 +97,22 @@ To train train a HGCN node classification model on Cora and Pubmed datasets, pre
 
   * Cora ():
 
-### 4.2 Training GCN 
+### 4.2 Training HGCN-ATT<sub>0</sub>
 
 #### Link prediction 
 
- * Cora (): 
+ * Disease (TEST ROC-AUC = 81.6 $\pm$ 7.5): <br>
+  ```python3 train.py --task lp --dataset disease_lp --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.0 --r 2.0 --t 1.0```
 
- * Airport ():
+
+ * Airport (TEST ROC-AUC = 93.6 $\pm$ 0.4): <br>
+  ```python3 train.py --task lp --dataset airport --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0```
  
- * PubMed ():
+ * PubMed (TEST ROC-AUC = 95.1 $\pm$ 0.1): <br>
+  ```python3 train.py --task lp --dataset pubmed --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.4 --weight-decay 0.0001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0```
 
- * Cora ():
+ * Cora (TEST ROC-AUC = 93.1 $\pm$ 0.3): <br>
+  ```python3 train.py --task lp --dataset cora --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.5 --weight-decay 0.001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0```
 
 #### Node classification 
 
