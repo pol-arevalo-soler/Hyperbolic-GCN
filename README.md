@@ -32,7 +32,7 @@ Before cloning the repository, ensure that you have the following installed on y
 
 If you don't have conda installed, please install it following the instructions [here](https://conda.io/projects/conda/en/latest/user-guide/install/index.html).
 
-### Create conda environment
+### Create conda environment
 
 ```conda env create -f environment.yml```
 
