@@ -282,7 +282,7 @@ class OriginHypLinear(nn.Module):
 
     def forward(self, x):
         drop_weight = F.dropout(self.weight, self.dropout, training=self.training)
-        mv = self.manifold.mobius_matvec(drop_weight, x, self.c)
+        mv = self.manifold.old_mobius_matvec(drop_weight, x, self.c)
         res = self.manifold.proj(mv, self.c)
         if self.use_bias:
             bias = self.manifold.proj_tan0(self.bias.view(1, -1), self.c)

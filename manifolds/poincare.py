@@ -51,9 +51,6 @@ class PoincareBall(Manifold):
         return dp
 
     def proj(self, x, c):
-        #New: Torch.abs 
-        #c = c.clamp(min = self.eps[c.dtype])
-
         norm = torch.clamp_min(x.norm(dim=-1, keepdim=True, p=2), self.min_norm)
         maxnorm = (1 - self.eps[x.dtype]) / (c ** 0.5)
         cond = norm > maxnorm
@@ -67,9 +64,6 @@ class PoincareBall(Manifold):
         return u
 
     def expmap(self, u, p, c):
-        #New: Torch.abs 
-        #c = c.clamp(min = self.eps[c.dtype])
-
         sqrt_c = c ** 0.5
         u_norm = u.norm(dim=-1, p=2, keepdim=True).clamp_min(self.min_norm)
         second_term = (
@@ -81,9 +75,6 @@ class PoincareBall(Manifold):
         return gamma_1
 
     def logmap(self, p1, p2, c):
-        #New: Torch.abs 
-        #c = c.clamp(min = self.eps[c.dtype])
-
         sub = self.mobius_add(-p1, p2, c)
         sub_norm = sub.norm(dim=-1, p=2, keepdim=True).clamp_min(self.min_norm)
         lam = self._lambda_x(p1, c)
@@ -91,20 +82,13 @@ class PoincareBall(Manifold):
         return 2 / sqrt_c / lam * artanh(sqrt_c * sub_norm) * sub / sub_norm
 
     def expmap0(self, u, c):
-        #New: Torch.abs
-        #c = c.clamp(min = self.eps[c.dtype])
-
         sqrt_c = c ** 0.5
         u_norm = torch.clamp_min(u.norm(dim=-1, p=2, keepdim=True), self.min_norm)
         gamma_1 = tanh(sqrt_c * u_norm) * u / (sqrt_c * u_norm)
         return gamma_1
 
-    def logmap0(self, p, c):
-        #New: Torch.abs 
-        #c = c.clamp(min = self.eps[c.dtype])
-        
+    def logmap0(self, p, c):        
         sqrt_c = c ** 0.5
-
         p_norm = p.norm(dim=-1, p=2, keepdim=True).clamp_min(self.min_norm)
         scale = 1. / sqrt_c * artanh(sqrt_c * p_norm) / p_norm
         return scale * p
@@ -118,32 +102,13 @@ class PoincareBall(Manifold):
         return num / denom.clamp_min(self.min_norm)
 
     def mobius_matvec(self, m, x, c):
-        #New: Torch.abs 
-        #c = c.clamp(min = self.eps[c.dtype])
-
-        '''
-        #Old:
-        sqrt_c = c ** 0.5
-        x_norm = x.norm(dim=-1, keepdim=True, p=2).clamp_min(self.min_norm)
-        mx = F.linear(input=x, weight=m, bias=None) 
-        mx_norm = mx.norm(dim=-1, keepdim=True, p=2).clamp_min(self.min_norm)
-        res_c = tanh(mx_norm / x_norm * artanh(sqrt_c * x_norm)) * mx / (mx_norm * sqrt_c)
-        cond = (mx == 0).prod(-1, keepdim=True, dtype=torch.uint8)
-        res_0 = torch.zeros(1, dtype=res_c.dtype, device=res_c.device)
-        res = torch.where(cond, res_0, res_c)
-        return res
-        '''
-
-        #New:
         mx = F.linear(input=x, weight=m, bias=None) 
         return self.expmap0(mx, c)
 
-    def mobius_matvec_sparse(self, m, x, c):
-        # New New version
+    def old_mobius_matvec(self, m, x, c):
         sqrt_c = c ** 0.5
         x_norm = x.norm(dim=-1, keepdim=True, p=2).clamp_min(self.min_norm)
-        mx = torch.spmm(m, x)
-        #mx = x @ m.transpose(-1, -2)
+        mx = F.linear(input=x, weight=m, bias=None) 
         mx_norm = mx.norm(dim=-1, keepdim=True, p=2).clamp_min(self.min_norm)
         res_c = tanh(mx_norm / x_norm * artanh(sqrt_c * x_norm)) * mx / (mx_norm * sqrt_c)
         cond = (mx == 0).prod(-1, keepdim=True, dtype=torch.uint8)
