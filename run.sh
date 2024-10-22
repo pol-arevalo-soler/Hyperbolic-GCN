@@ -2,7 +2,7 @@
 python3 train.py \
     --task # choose lp or nc 
     \ --dataset # choose airport, disease_lp, disease_nc, cora, pubmed 
-    \ --model # choose between GCN, HGCN or SHGCN 
+    \ --model # choose between GCN, HGCN or sHGCN 
     \ --lr 0.01 \
     --dim 16 \
     --num-layers 2 \
