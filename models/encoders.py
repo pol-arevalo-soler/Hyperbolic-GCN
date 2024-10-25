@@ -132,6 +132,9 @@ class HGCN(Encoder):
         )
 
     def encode(self, x, adj):        
+        x_tan = self.manifold.proj_tan0(x, self.curvatures[0])
+        x_hyp = self.manifold.expmap0(x_tan, c=self.curvatures[0])
+        x_hyp = self.manifold.proj(x_hyp, c=self.curvatures[0])
         return super(HGCN, self).encode(x, adj)
 
 class sHGCN(Encoder):
