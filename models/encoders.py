@@ -114,8 +114,7 @@ class HGCN(Encoder):
         self.manifold = getattr(manifolds, args.manifold)()
         assert args.num_layers > 0, "Number of layers must be greater than 0."
         dims, acts, self.curvatures = hyp_layers.get_dim_act_curv(args)
-        self.curvatures.append(torch.tensor([args.c]))
-
+        
         self.layers = nn.Sequential(
             *[
                 hyp_layers.OriginHyperbolicGraphConvolution(

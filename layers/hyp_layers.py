@@ -22,10 +22,10 @@ def get_dim_act_curv(args):
 
     if args.c is None:
         # create list of trainable curvature parameters
-        curvatures = [nn.Parameter(torch.Tensor([1.])) for _ in range(args.num_layers)]
+        curvatures = [nn.Parameter(torch.Tensor([1.])) for _ in range(args.num_layers+1)]
     else:
         # fixed curvature
-        curvatures = [torch.tensor([args.c]) for _ in range(args.num_layers)]
+        curvatures = [torch.tensor([args.c]) for _ in range(args.num_layers+1)]
     
     return dims, acts, curvatures
 
