@@ -75,5 +75,6 @@ class FermiDiracDecoder(nn.Module):
 
 model2decoder = {
     'GCN': GCNDecoder,
-    'HGCN': LinearDecoder
+    'HGCN': LinearDecoder,
+    'sHGCN': LinearDecoder
 }

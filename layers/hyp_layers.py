@@ -58,8 +58,8 @@ class HyperbolicGraphConvolution(nn.Module):
     def __init__(self, manifold, in_features, out_features, c, dropout, act, use_bias):
         super(HyperbolicGraphConvolution, self).__init__()
         self.linear = HypLinear(manifold, in_features, out_features, c, dropout, use_bias)
-        self.agg = HypAgg(manifold, c, out_features, dropout)
-        self.hyp_act = HypAct(manifold, c, act)
+        self.agg = HypAgg(manifold, c)
+        self.hyp_act = HypAct(act)
 
     def forward(self, input):
         x, adj = input
@@ -120,12 +120,12 @@ class HypLinear(nn.Module):
         """Forward pass for the hyperbolic linear layer."""
         drop_weight = F.dropout(self.weight, self.dropout, training=self.training)
         
-        # Möbius matrix-vector multiplication
         mv = self.manifold.mobius_matvec(drop_weight, x, self.c)
         res = self.manifold.proj(mv, self.c)  
         
         if self.use_bias:
             hyp_bias = self.manifold.expmap0(self.bias.view(1, -1), self.c)
+            hyp_bias = self.manifold.proj(hyp_bias, self.c)
             res = self.manifold.mobius_add(res, hyp_bias, c=self.c)
             res = self.manifold.proj(res, self.c)  
 
@@ -147,30 +147,23 @@ class HypAgg(Module):
         The hyperbolic manifold used for computations.
     c : float
         Curvature of the hyperbolic space.
-    in_features : int
-        Number of input features for each node.
-    dropout : float
-        Dropout rate applied during training.
     """
 
-    def __init__(self, manifold, c, in_features, dropout):
+    def __init__(self, manifold, c):
         super(HypAgg, self).__init__()
         self.manifold = manifold
         self.c = c
-        self.in_features = in_features
-        self.dropout = dropout
 
     def forward(self, x, adj):
         x_tangent = self.manifold.logmap0(x, c=self.c)
         support_t = torch.spmm(adj, x_tangent)
-        support_t = F.dropout(support_t, self.dropout, training=self.training)
 
         return support_t
 
     def extra_repr(self):
         """Additional information to display when printing the layer."""
-        return 'c={}, in_features={}, dropout={}'.format(
-            self.c, self.in_features, self.dropout
+        return 'c={}'.format(
+            self.c
         )
 
 class HypAct(Module):
@@ -179,18 +172,12 @@ class HypAct(Module):
 
     Parameters:
     -----------
-    manifold : object
-        The hyperbolic manifold used for computations.
-    c : float
-        Curvature of the hyperbolic space.
     act : callable
         Activation function to apply in the tangent space (e.g., F.relu, F.leaky_relu).
     """
 
-    def __init__(self, manifold, c, act=F.relu):
+    def __init__(self, act=F.relu):
         super(HypAct, self).__init__()
-        self.manifold = manifold
-        self.c = c
         self.act = act
 
     def forward(self, x):  
@@ -198,7 +185,7 @@ class HypAct(Module):
                   
     def extra_repr(self):
         """Additional information to display when printing the layer."""
-        return 'c={}, act={}'.format(self.c, self.act.__name__ if hasattr(self.act, '__name__') else str(self.act))
+        return 'act={}'.format(self.act.__name__ if hasattr(self.act, '__name__') else str(self.act))
     
 class OriginHyperbolicGraphConvolution(nn.Module):
     """
@@ -229,7 +216,7 @@ class OriginHyperbolicGraphConvolution(nn.Module):
     def __init__(self, manifold, in_features, out_features, c_in, c_out, dropout, act, use_bias):
         super(OriginHyperbolicGraphConvolution, self).__init__()
         self.linear = OriginHypLinear(manifold, in_features, out_features, c_in, dropout, use_bias)
-        self.agg = OriginHypAgg(manifold, c_in, out_features, dropout)
+        self.agg = OriginHypAgg(manifold, c_in)
         self.hyp_act = OriginHypAct(manifold, c_in, c_out, act)
 
     def forward(self, input):
@@ -314,13 +301,10 @@ class OriginHypAgg(Module):
         Dropout rate applied during training.
     """
 
-    def __init__(self, manifold, c, in_features, dropout):
+    def __init__(self, manifold, c):
         super(OriginHypAgg, self).__init__()
         self.manifold = manifold
         self.c = c
-
-        self.in_features = in_features
-        self.dropout = dropout
         
     def forward(self, x, adj):
         x_tangent = self.manifold.logmap0(x, c=self.c)
@@ -332,8 +316,8 @@ class OriginHypAgg(Module):
 
     def extra_repr(self):
         """Additional information to display when printing the layer."""
-        return 'c={}, in_features={}, dropout={}'.format(
-            self.c, self.in_features, self.dropout
+        return 'c={}'.format(
+            self.c
         )
 
 class OriginHypAct(Module):
@@ -364,6 +348,6 @@ class OriginHypAct(Module):
 
     def extra_repr(self):
         """Additional information to display when printing the layer."""
-        return 'c_in={}, c_out={}'.format(
-            self.c_in, self.c_out, self.act
+        return 'c_in={}, c_out={} act={}'.format(
+            self.c_in, self.c_out, self.act.__name__ if hasattr(self.act, '__name__') else str(self.act)
         )

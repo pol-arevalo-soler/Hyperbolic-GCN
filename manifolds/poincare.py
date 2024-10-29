@@ -32,7 +32,7 @@ class PoincareBall(Manifold):
         dist = dist_c * 2 / sqrt_c
         return dist ** 2
 
-    def sqdist_euclidean(self, p1, p2, c):
+    def sqdist_euclidean(self, p1, p2):
         # Euclidean distance 
         return (p1 - p2).pow(2).sum(dim=-1)
 
@@ -111,10 +111,14 @@ class PoincareBall(Manifold):
         mx = F.linear(input=x, weight=m, bias=None) 
         mx_norm = mx.norm(dim=-1, keepdim=True, p=2).clamp_min(self.min_norm)
         res_c = tanh(mx_norm / x_norm * artanh(sqrt_c * x_norm)) * mx / (mx_norm * sqrt_c)
-        cond = (mx == 0).prod(-1, keepdim=True, dtype=torch.uint8)
+        
+        # Use boolean condition instead of uint8
+        cond = (mx == 0).all(dim=-1, keepdim=True)  # Check if all elements are zero
         res_0 = torch.zeros(1, dtype=res_c.dtype, device=res_c.device)
+        
         res = torch.where(cond, res_0, res_c)
         return res
+
          
     def init_weights(self, w, c, irange=1e-5):
         w.data.uniform_(-irange, irange)

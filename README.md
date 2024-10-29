@@ -89,9 +89,11 @@ We provide examples of training commands used to train sHGCN and HGCN-ATT<sub>0<
 #### Link prediction
 
   * Disease (Test ROC-AUC = 94.6 $\pm$ 0.6): <br>
-  ```python3 train.py --task lp --dataset disease_lp --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.2 --r 0.0 --t 1.0```
+
+  ```python3 train.py --task lp --dataset disease_lp --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.2 --r 0.0 --t 1.0 --normalize-feats 0```
 
   * Airport (Test ROC-AUC = 94.7 $\pm$ 0.4): <br>
+
   ```python3 train.py --task lp --dataset airport --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.1 --r 2.0 --t 1.0```
 
   * Pubmed (Test ROC-AUC = 95.7 $\pm$ 0.3): <br>
@@ -120,7 +122,7 @@ To train train a HGCN node classification model on Cora and Pubmed datasets, pre
 #### Link prediction 
 
  * Disease (TEST ROC-AUC = 81.6 $\pm$ 7.5): <br>
-  ```python3 train.py --task lp --dataset disease_lp --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.0 --r 2.0 --t 1.0```
+  ```python3 train.py --task lp --dataset disease_lp --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.0 --r 2.0 --t 1.0 --normalize-feats 0```
 
 
  * Airport (TEST ROC-AUC = 93.6 $\pm$ 0.4): <br>

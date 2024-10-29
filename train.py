@@ -15,7 +15,6 @@ from config import parser
 from models.base_models import NCModel, LPModel
 from utils.data_utils import load_data
 from utils.train_utils import get_dir_name, format_metrics
-from visualization import visualize
 
 def train(args):
     np.random.seed(args.seed)
@@ -78,31 +77,6 @@ def train(args):
     )
     tot_params = sum([np.prod(p.size()) for p in model.parameters()])
     logging.info(f"Total number of parameters: {tot_params}")
-
-    '''
-    # Visualization
-    # Create plots folder if not exists
-    if not os.path.exists('plots'):
-        os.makedirs('plots')
-
-    # Create a folder named with the current date (day-month-year)
-    date_str = datetime.datetime.now().strftime("%d-%m-%Y")
-    subfolder = os.path.join('plots', date_str)
-
-    # Ensure the subfolder exists
-    if not os.path.exists(subfolder):
-        os.makedirs(subfolder)
-
-    folder_path = datetime.datetime.now().strftime("%H-%M-%S") 
-    folder_path = os.path.join(subfolder, folder_path)
-
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-
-    if args.task == 'nc':
-        title = f"{args.dataset}_source.png"
-        visualize(data['features'], data['labels'], folder_path, title, True)
-    '''
         
     # Train model
     if 'cuda' in args.device:
@@ -156,27 +130,14 @@ def train(args):
     logging.info("Optimization Finished!")
     logging.info("Total time elapsed: {:.4f}s".format(time.time() - t_total))
     logging.info("Total epochs: {} epochs".format(int(epoch)))
+    logging.info("Total s/Epoch: {:.4f} ".format((time.time()-t_total)/int(epoch)))
     if not best_test_metrics:
         model.eval()
         best_emb = model.encode(data['features'], data['adj_train_norm'])
         best_test_metrics = model.compute_metrics(best_emb, data, 'test')
     logging.info(" ".join(["Val set results:", format_metrics(best_val_metrics, 'val')]))
     logging.info(" ".join(["Test set results:", format_metrics(best_test_metrics, 'test')]))
-    
-    '''
-    # Visualization
-    if args.task == 'nc':
-        title = f"{args.dataset}_groundtruth.png"
-        visualize(best_emb, data['labels'], folder_path, title, False)
-        
-        title = f"{args.dataset}_predicted.png"
-        preds = model.compute_all_labels(best_emb, data['adj_train_norm'])
-        visualize(best_emb, preds, folder_path, title, True)
-        
-        title = f"{args.dataset}_predicted-original.png"
-        visualize(data['features'], preds, folder_path, title, True)
-    '''
-        
+            
     # Save embeddings and model
     if args.save:
         np.save(os.path.join(save_dir, 'embeddings.npy'), best_emb.cpu().detach().numpy())

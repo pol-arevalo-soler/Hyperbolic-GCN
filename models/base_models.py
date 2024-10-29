@@ -25,8 +25,9 @@ class BaseModel(nn.Module):
             args.feat_dim = args.feat_dim + 1
         self.nnodes = args.n_nodes
         self.encoder = getattr(encoders, args.model)(args)
+        self.name_encoder = args.model
         # Pick curvature of the last layer
-        if args.model == 'HGCN':
+        if args.model == 'HGCN' or args.model == 'sHGCN':
             self.c = self.encoder.curvatures[args.num_layers-1]
         else:
             self.c = None
@@ -113,7 +114,10 @@ class LPModel(BaseModel):
         emb_in = h[idx[:, 0], :]
         emb_out = h[idx[:, 1], :]
         
-        sqdist = self.manifold.sqdist_euclidean(emb_in, emb_out, self.c)
+        if self.name_encoder == "HGCN":
+            sqdist = self.manifold.sqdist(emb_in, emb_out, self.c)
+        else:
+            sqdist = self.manifold.sqdist_euclidean(emb_in, emb_out)
             
         probs = self.decoder.forward(sqdist)
         return probs

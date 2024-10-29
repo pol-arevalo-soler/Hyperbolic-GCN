@@ -16,6 +16,10 @@ class Manifold(object):
         """Squared distance between pairs of points."""
         raise NotImplementedError
 
+    def sqdist_euclidean(self, p1, p2):
+        """Euclidean Squared distance between pairs of points."""
+        raise NotImplementedError
+    
     def egrad2rgrad(self, p, dp, c):
         """Converts Euclidean Gradient to Riemannian Gradients."""
         raise NotImplementedError
@@ -53,6 +57,10 @@ class Manifold(object):
         raise NotImplementedError
 
     def mobius_matvec(self, m, x, c):
+        """Performs hyperboic martrix-vector multiplication."""
+        raise NotImplementedError
+
+    def old_mobius_matvec(self, m, x, c):
         """Performs hyperboic martrix-vector multiplication."""
         raise NotImplementedError
 

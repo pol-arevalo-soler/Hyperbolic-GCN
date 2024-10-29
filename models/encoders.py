@@ -1,3 +1,4 @@
+import torch
 import torch.nn as nn
 
 import manifolds
@@ -66,11 +67,11 @@ class GCN(Encoder):
         self.layers = nn.Sequential(
             *[
                 GraphConvolution(
-                    in_dim=dims[i],
-                    out_dim=dims[i+1],
+                    in_features=dims[i],
+                    out_features=dims[i+1],
                     dropout=args.dropout,
                     act=acts[i],
-                    bias=args.bias
+                    use_bias=args.bias
                 )
                 for i in range(len(dims)-1)
             ]
@@ -113,12 +114,12 @@ class HGCN(Encoder):
         self.manifold = getattr(manifolds, args.manifold)()
         assert args.num_layers > 0, "Number of layers must be greater than 0."
         dims, acts, self.curvatures = hyp_layers.get_dim_act_curv(args)
-        self.curvatures.append(args.c)
+        self.curvatures.append(torch.tensor([args.c]))
 
         self.layers = nn.Sequential(
             *[
                 hyp_layers.OriginHyperbolicGraphConvolution(
-                    self.manifold,
+                    manifold=self.manifold,
                     in_features=dims[i],
                     out_features=dims[i + 1],
                     c_in=self.curvatures[i],
@@ -178,7 +179,7 @@ class sHGCN(Encoder):
         self.layers = nn.Sequential(
             *[
                 hyp_layers.HyperbolicGraphConvolution(
-                    self.manifold,
+                    manifold=self.manifold,
                     in_features=dims[i],
                     out_features=dims[i + 1],
                     c=self.curvatures[i],
