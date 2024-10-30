@@ -125,7 +125,9 @@ class HGCN(Encoder):
                     c_out=self.curvatures[i+1],
                     dropout=args.dropout,
                     act=acts[i],
-                    use_bias=args.bias
+                    use_bias=args.bias,
+                    use_att=args.use_att,
+                    local_agg=args.local_agg
                 )
                 for i in range(len(dims) - 1)
             ]

@@ -7,6 +7,8 @@ import torch.nn.functional as F
 import torch.nn.init as init
 from torch.nn.modules.module import Module
 
+from layers.att_layers import DenseAtt
+
 def get_dim_act_curv(args):
     """
     Helper function to get dimension and activation at every layer.
@@ -49,10 +51,6 @@ class HyperbolicGraphConvolution(nn.Module):
         Activation function in hyperbolic space.
     use_bias : bool
         Whether to use bias in the linear layer.
-    use_att : bool
-        Whether to use attention mechanism in aggregation.
-    local_agg : bool
-        Whether to use local aggregation in hyperbolic aggregation.
     """
 
     def __init__(self, manifold, in_features, out_features, c, dropout, act, use_bias):
@@ -213,10 +211,10 @@ class OriginHyperbolicGraphConvolution(nn.Module):
         Whether to use local aggregation in hyperbolic aggregation.
     """
 
-    def __init__(self, manifold, in_features, out_features, c_in, c_out, dropout, act, use_bias):
+    def __init__(self, manifold, in_features, out_features, c_in, c_out, dropout, act, use_bias, use_att, local_agg):
         super(OriginHyperbolicGraphConvolution, self).__init__()
         self.linear = OriginHypLinear(manifold, in_features, out_features, c_in, dropout, use_bias)
-        self.agg = OriginHypAgg(manifold, c_in)
+        self.agg = OriginHypAgg(manifold, c_in, out_features, dropout, use_att, local_agg)
         self.hyp_act = OriginHypAct(manifold, c_in, c_out, act)
 
     def forward(self, input):
@@ -299,18 +297,42 @@ class OriginHypAgg(Module):
         Number of input features for each node.
     dropout : float
         Dropout rate applied during training.
+    use_att : int
+        Enables the attention mechanism in the model.
+    local_agg : int
+         Enables local aggregation.
     """
 
-    def __init__(self, manifold, c):
+    def __init__(self, manifold, c, in_features, dropout, use_att, local_agg):
         super(OriginHypAgg, self).__init__()
         self.manifold = manifold
         self.c = c
         
+        self.in_features = in_features
+        self.dropout = dropout
+        self.local_agg = local_agg
+        self.use_att = use_att
+        if self.use_att:
+            self.att = DenseAtt(in_features, dropout)
+
     def forward(self, x, adj):
         x_tangent = self.manifold.logmap0(x, c=self.c)
-
-        # Aggregation at the origin
-        support_t = torch.spmm(adj, x_tangent)
+        if self.use_att:
+            if self.local_agg:
+                x_local_tangent = []
+                for i in range(x.size(0)):
+                    x_local_tangent.append(self.manifold.logmap(x[i], x, c=self.c))
+                x_local_tangent = torch.stack(x_local_tangent, dim=0)
+                adj_att = self.att(x_tangent, adj)
+                att_rep = adj_att.unsqueeze(-1) * x_local_tangent
+                support_t = torch.sum(adj_att.unsqueeze(-1) * x_local_tangent, dim=1)
+                output = self.manifold.proj(self.manifold.expmap(x, support_t, c=self.c), c=self.c)
+                return output
+            else:
+                adj_att = self.att(x_tangent, adj)
+                support_t = torch.matmul(adj_att, x_tangent)
+        else:
+            support_t = torch.spmm(adj, x_tangent)
         output = self.manifold.proj(self.manifold.expmap0(support_t, c=self.c), c=self.c)
         return output
 
@@ -328,8 +350,10 @@ class OriginHypAct(Module):
     -----------
     manifold : object
         The hyperbolic manifold used for computations.
-    c : float
-        Curvature of the hyperbolic space.
+    c_in : float
+        Curvature of the hyperbolic space of layer l.
+    c_out : float
+        Curvature of the hyperbolic space of layer l+1.
     act : callable
         Activation function to apply in the tangent space (e.g., F.relu, F.leaky_relu).
     """

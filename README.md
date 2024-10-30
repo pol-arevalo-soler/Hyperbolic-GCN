@@ -84,6 +84,16 @@ Metrics are printed at the end of training or can be saved in a directory by add
 
 We provide examples of training commands used to train sHGCN and HGCN-ATT<sub>0</sub> for link prediction and node classification. To reproduce the results in this paper, run each command for 10 random seeds (from 0 to 9) and average the results. Note that our results are obtained using a GPU for these seeds, and may vary slightly based on the machine used.
 
+### Running the HGCN Model with Attention and Local Aggregation
+
+To run the original script for the HGCN model with attention and local aggregation, include the following arguments:
+
+- `--use-att 1`: Enables the attention mechanism in the model.
+- `--local-agg 1`: Enables local aggregation.
+
+For example: <br>
+```python3 train.py --task lp --dataset disease_lp --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.2 --r 0.0 --t 1.0 --normalize-feats 0 --local-agg 1 --use-att 1```
+
 ### 4.1 Training sHGCN
 
 #### Link prediction
