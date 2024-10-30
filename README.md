@@ -86,7 +86,7 @@ We provide examples of training commands used to train sHGCN and HGCN-ATT<sub>0<
 
 ### Running the HGCN Model with Attention and Local Aggregation
 
-To run the original script for the HGCN model with attention and local aggregation, include the following arguments:
+To run the original script [[1]](https://proceedings.neurips.cc/paper_files/paper/2019/file/0415740eaa4d9decbc8da001d3fd805f-Paper.pdf) for the HGCN model with attention and local aggregation, include the following arguments:
 
 - `--use-att 1`: Enables the attention mechanism in the model.
 - `--local-agg 1`: Enables local aggregation.
