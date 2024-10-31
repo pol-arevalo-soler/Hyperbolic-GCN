@@ -27,7 +27,9 @@ class BaseModel(nn.Module):
         self.encoder = getattr(encoders, args.model)(args)
         self.name_encoder = args.model
         # Pick curvature of the last layer
-        if args.model == 'HGCN' or args.model == 'sHGCN':
+        if args.model == 'HGCN':
+            self.c = self.encoder.curvatures[args.num_layers]
+        elif args.model == 'sHGCN':
             self.c = self.encoder.curvatures[args.num_layers-1]
         else:
             self.c = None
@@ -68,6 +70,8 @@ class NCModel(BaseModel):
             self.weights = torch.Tensor([1., 1. / data['labels'][idx_train].mean()])
         else:
             self.weights = torch.Tensor([1.] * args.n_classes)
+        if not args.cuda == -1:
+            self.weights = self.weights.to(args.device)
 
     def decode(self, h, adj, idx):
         output = self.decoder.decode(h, adj)
