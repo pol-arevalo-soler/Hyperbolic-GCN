@@ -92,18 +92,16 @@ To run the original script [[1]](https://proceedings.neurips.cc/paper_files/pape
 - `--local-agg 1`: Enables local aggregation.
 
 For example: <br>
-```python3 train.py --task lp --dataset disease_lp --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.2 --r 0.0 --t 1.0 --normalize-feats 0 --local-agg 1 --use-att 1```
+```python3 train.py --task lp --dataset disease_lp --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.0 --r 2.0 --t 1.0 --normalize-feats 0 --local-agg 1 --use-att 1```
 
 ### 4.1 Training sHGCN
 
 #### Link prediction
 
   * Disease (Test ROC-AUC = 94.6 $\pm$ 0.6): <br>
-
   ```python3 train.py --task lp --dataset disease_lp --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.2 --r 0.0 --t 1.0 --normalize-feats 0```
 
   * Airport (Test ROC-AUC = 94.7 $\pm$ 0.4): <br>
-
   ```python3 train.py --task lp --dataset airport --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c 1.1 --r 2.0 --t 1.0```
 
   * Pubmed (Test ROC-AUC = 95.7 $\pm$ 0.3): <br>
@@ -115,17 +113,19 @@ For example: <br>
 
 #### Node classification
 
-  * Disease ():
+  * Disease (TEST F1 = ): <br>
+  ```python3 train.py --task nc --dataset disease_nc --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
-  * Airport ():
+  * Airport (TEST F1 = ):
+   ```python3 train.py --task nc --dataset airport --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
-To train train a HGCN node classification model on Cora and Pubmed datasets, pre-train embeddings for link prediction as decribed in the previous section. Then train a MLP classifier using the pre-trained embeddings (```embeddings.npy``` file saved in the ```save-dir``` directory). For instance for the Pubmed dataset:
+To train train a sHGCN node classification model on Cora and Pubmed datasets, pre-train embeddings for link prediction as decribed in the previous section. Then train a MLP classifier using the pre-trained embeddings (```embeddings.npy``` file saved in the ```save-dir``` directory) using the Shallow model:
  
-  * PubMed ():
+  * PubMed (TEST ACC = ): <br>
+  ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
 
-```python train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
-
-  * Cora ():
+  * Cora (TEST ACC = ): <br>
+  ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
 
 ### 4.2 Training HGCN-ATT<sub>0</sub>
 
@@ -146,13 +146,26 @@ To train train a HGCN node classification model on Cora and Pubmed datasets, pre
 
 #### Node classification 
 
- * Disease (): 
+ * Disease (TEST F1 = ): <br>
+ ```python3 train.py --task nc --dataset disease_nc --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
- * Airport ():
+ * Airport (TEST F1 = ): <br>
+ ```python3 train.py --task nc --dataset airport --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
- * PubMed ():
+To train train a HGCN node classification model on Cora and Pubmed datasets, pre-train embeddings for link prediction as decribed in the previous section. Then train a MLP classifier using the pre-trained embeddings (```embeddings.npy``` file saved in the ```save-dir``` directory) using the Shallow model:
 
- * Cora (): 
+First pre-train embeddings using ```lp``` task: <br>
+```python3 train.py --task lp --dataset pubmed --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.4 --weight-decay 0.0001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save-dir 1```
+
+ ```python3 train.py --task lp --dataset cora --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.5 --weight-decay 0.001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save-dir 1```
+
+Then we can perform the Node Classification task using the ```Shallow``` model.
+
+ * PubMed (TEST ACC = ): <br>
+ ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
+
+ * Cora (TEST ACC = ): <br>
+ ```python3 train.py --task nc --dataset cora --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
 
 
 ## Citation
