@@ -1,0 +1,9 @@
+name: hgcn  # Replace with your desired environment name
+channels:
+  - defaults
+  - pytorch  # Add pytorch channel if needed
+dependencies:
+  - python=3.11  # Specify your desired Python version
+  - numpy=1.26.4
+  - scikit-learn=1.5.2
+  - pytorch=2.2.2

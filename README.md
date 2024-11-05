@@ -3,7 +3,7 @@ Simplified Hyperbolic Graph Convolutional Networks in PyTorch
 
 ## 1. Overview
 
-This repository is a graph representation learning library, containing a modified implementation of Hyperbolic Graph Convolutional Networks (HGCN) [[1]](https://proceedings.neurips.cc/paper_files/paper/2019/file/0415740eaa4d9decbc8da001d3fd805f-Paper.pdf) as well as  Graph Convolutional Networks (GCN) [[2]](https://arxiv.org/pdf/1609.02907.pdf).
+This repository is a graph representation learning library, containing a modified implementation of Hyperbolic Graph Convolutional Networks (HGCN) [[1]](https://proceedings.neurips.cc/paper_files/paper/2019/file/0415740eaa4d9decbc8da001d3fd805f-Paper.pdf) as well as  original (HGCN) method.
   
 All models can be trained for: 
 
@@ -22,9 +22,9 @@ Before cloning the repository, ensure that you have the following installed on y
 
 - **Git**: A version control system to manage your source code. You can download and install Git from the official [Git website](https://git-scm.com/downloads).
 
-```git clone https://github.com/pol-arevalo-soler/hgcn.git```
+```git@github.com:pol-arevalo-soler/Hyperbolic-GCN.git```
 
-```cd hgcn```
+```cd Hyperbolic-GCN```
 
 ### 2.2 Installation with conda
 
@@ -54,7 +54,16 @@ Alternatively, if you prefer to install dependencies using `pip`, follow the ste
 
 ```pip install -r requirements.txt```
 
-### 2.3 Datasets
+
+### 2.4 Folder structure
+
+This project contains two main folders:
+
+- **Old_HGCN**: This folder contains the original method of Hyperbolic Graph Convolutional Networks (HGCN). You will find the implementation and relevant resources related to this method in this directory.
+
+- **sHGCN**: This folder contains the new method, which is the Simplified Hyperbolic Graph Neural Networks. This implementation represents an updated approach to the concepts introduced in the original HGCN, aiming to enhance efficiency and performance.
+
+### 2.5 Datasets
 
 The ```data/``` folder contains source files for:
 
@@ -69,9 +78,7 @@ To run this code on new datasets, please add corresponding data processing and l
 
 ### 3.1 ```set_env.sh```
 
-Before training, run 
-
-```source set_env.sh```
+Before training, run  ```source set_env.sh```
 
 This will create environment variables that are used in the code. 
 
@@ -82,7 +89,7 @@ Metrics are printed at the end of training or can be saved in a directory by add
 
 ## 4. Reproducibility and Examples
 
-We provide examples of training commands used to train sHGCN and HGCN-ATT<sub>0</sub> for link prediction and node classification. To reproduce the results in this paper, run each command for 10 random seeds (from 0 to 9) and average the results. Note that our results are obtained using a GPU for these seeds, and may vary slightly based on the machine used.
+We provide examples of training commands used to train sHGCN (sHGCN folder) and HGCN-ATT<sub>0</sub> (Old_HGCN folder) for link prediction and node classification. To reproduce the results in this paper, run each command for 10 random seeds (from 0 to 9) and average the results. Note that our results are obtained using a GPU for these seeds, and may vary slightly based on the machine used.
 
 ### Running the HGCN Model with Attention and Local Aggregation
 
@@ -114,18 +121,18 @@ For example: <br>
 #### Node classification
 
   * Disease (TEST F1 = ): <br>
-  ```python3 train.py --task nc --dataset disease_nc --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
+  ```python3 train.py --task nc --dataset disease_nc --model sHGCN --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
   * Airport (TEST F1 = ):
-   ```python3 train.py --task nc --dataset airport --model sHGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
+   ```python3 train.py --task nc --dataset airport --model sHGCN --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
 To train train a sHGCN node classification model on Cora and Pubmed datasets, pre-train embeddings for link prediction as decribed in the previous section. Then train a MLP classifier using the pre-trained embeddings (```embeddings.npy``` file saved in the ```save-dir``` directory) using the Shallow model:
  
   * PubMed (TEST ACC = ): <br>
-  ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
+  ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
 
   * Cora (TEST ACC = ): <br>
-  ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
+  ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
 
 ### 4.2 Training HGCN-ATT<sub>0</sub>
 
@@ -147,25 +154,25 @@ To train train a sHGCN node classification model on Cora and Pubmed datasets, pr
 #### Node classification 
 
  * Disease (TEST F1 = ): <br>
- ```python3 train.py --task nc --dataset disease_nc --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
+ ```python3 train.py --task nc --dataset disease_nc --model HGCN --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
  * Airport (TEST F1 = ): <br>
- ```python3 train.py --task nc --dataset airport --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
+ ```python3 train.py --task nc --dataset airport --model HGCN --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.0 --weight-decay 0.0 --manifold PoincareBall --log-freq 5 --cuda 0 --c None```
 
 To train train a HGCN node classification model on Cora and Pubmed datasets, pre-train embeddings for link prediction as decribed in the previous section. Then train a MLP classifier using the pre-trained embeddings (```embeddings.npy``` file saved in the ```save-dir``` directory) using the Shallow model:
 
 First pre-train embeddings using ```lp``` task: <br>
-```python3 train.py --task lp --dataset pubmed --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.4 --weight-decay 0.0001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save-dir 1```
+```python3 train.py --task lp --dataset pubmed --model HGCN --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.4 --weight-decay 0.0001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save-dir 1```
 
- ```python3 train.py --task lp --dataset cora --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.5 --weight-decay 0.001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save-dir 1```
+ ```python3 train.py --task lp --dataset cora --model HGCN --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.5 --weight-decay 0.001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save-dir 1```
 
 Then we can perform the Node Classification task using the ```Shallow``` model.
 
  * PubMed (TEST ACC = ): <br>
- ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
+ ```python3 train.py --task nc --dataset pubmed --model Shallow --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
 
  * Cora (TEST ACC = ): <br>
- ```python3 train.py --task nc --dataset cora --model Shallow --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
+ ```python3 train.py --task nc --dataset cora --model Shallow --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.2 --weight-decay 0.0005 --manifold Euclidean --log-freq 5 --cuda 0 --use-feats 0 --pretrained-embeddings [PATH_TO_EMBEDDINGS]```
 
 
 ## Citation
@@ -180,5 +187,3 @@ If you find this code useful, please cite the following paper:
 ## References
 
 [1] [Chami, I., Ying, R., Ré, C. and Leskovec, J. Hyperbolic Graph Convolutional Neural Networks. NIPS 2019.](http://web.stanford.edu/~chami/files/hgcn.pdf)
-
-[2] [Kipf, T.N. and Welling, M. Semi-supervised classification with graph convolutional networks. ICLR 2017.](https://arxiv.org/pdf/1609.02907.pdf)
