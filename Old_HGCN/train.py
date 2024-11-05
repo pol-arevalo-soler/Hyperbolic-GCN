@@ -129,6 +129,8 @@ def train(args):
 
     logging.info("Optimization Finished!")
     logging.info("Total time elapsed: {:.4f}s".format(time.time() - t_total))
+    logging.info("Total epochs: {} epochs".format(int(epoch)))
+    logging.info("Total s/Epoch: {:.4f} ".format((time.time()-t_total)/int(epoch)))
     if not best_test_metrics:
         model.eval()
         best_emb = model.encode(data['features'], data['adj_train_norm'])
