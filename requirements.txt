@@ -8,6 +8,3 @@ scikit-learn==1.5.2
 
 # PyTorch with CUDA support (for Windows/Linux only)
 torch==2.2.2
-
-# PyTorch Geometric for graph neural networks
-torch_geometric==2.6.1

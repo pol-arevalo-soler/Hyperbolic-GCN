@@ -1,0 +1,10 @@
+# Requirements for the project
+
+# NumPy for numerical operations
+numpy==1.26.4
+
+# Scikit-learn for machine learning algorithms
+scikit-learn==1.5.2
+
+# PyTorch with CUDA support (for Windows/Linux only)
+torch==2.2.2
