@@ -1,7 +1,7 @@
 #!/bin/bash
 python3 train.py \
     --task nc \
-    --dataset airport \
+    --dataset disease_nc \
     --model HGCN \
     --lr 0.01 \
     --dim 16 \
