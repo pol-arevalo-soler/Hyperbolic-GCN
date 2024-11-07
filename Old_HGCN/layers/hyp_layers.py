@@ -142,7 +142,8 @@ class HypAgg(Module):
                 adj_att = self.att(x_tangent, adj)
                 att_rep = adj_att.unsqueeze(-1) * x_local_tangent
                 support_t = torch.sum(adj_att.unsqueeze(-1) * x_local_tangent, dim=1)
-                output = self.manifold.proj(self.manifold.expmap(x, support_t, c=self.c), c=self.c)
+                #output = self.manifold.proj(self.manifold.expmap(x, support_t, c=self.c), c=self.c)
+                output = self.manifold.proj(self.manifold.expmap(support_t, x, c=self.c), c=self.c)
                 return output
             else:
                 adj_att = self.att(x_tangent, adj)
