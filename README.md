@@ -91,6 +91,14 @@ Metrics are printed at the end of training or can be saved in a directory by add
 
 We provide examples of training commands used to train sHGCN (sHGCN folder) and HGCN-AGG<sub>0</sub> (Old_HGCN folder) for link prediction and node classification. To reproduce the results in this paper, run each command for 10 random seeds (from 0 to 9) and average the results. Note that our results are obtained using a GPU for these seeds, and may vary slightly based on the machine used.
 
+For the reproducibility of the HGCN-AGG<sub>0</sub> and HGCN-ATT<sub>0</sub> models, please refer to the README in the `Old_HGCN` folder:
+
+[README in the Old_HGCN folder](Old_HGCN/README.md)
+
+For the new sHGCN model, please refer to the README in the `sHGCN` folder:
+
+[README in the sHGCN folder](sHGCN/README.md)
+
 ### Running the HGCN Model with Attention and Local Aggregation
 
 To run the original script [[1]](https://proceedings.neurips.cc/paper_files/paper/2019/file/0415740eaa4d9decbc8da001d3fd805f-Paper.pdf) for the HGCN model with attention and local aggregation, include the following arguments:
