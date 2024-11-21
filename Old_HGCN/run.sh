@@ -16,3 +16,5 @@ python3 train.py \
     --c None \
     --r 0.0 \
     --t 1.0 \
+    --use-att 1 \
+    --local-agg 1

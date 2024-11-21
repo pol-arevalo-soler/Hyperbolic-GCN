@@ -55,7 +55,6 @@ class HyperbolicGraphConvolution(nn.Module):
         output = h, adj
         return output
 
-
 class HypLinear(nn.Module):
     """
     Hyperbolic linear layer.
@@ -128,3 +127,88 @@ class HypAct(Module):
     def extra_repr(self):
         return 'act={}'.format(self.act.__name__ if hasattr(self.act, '__name__') else str(self.act))
 
+class NewHyperbolicGraphConvolution(nn.Module):
+    """
+    New Hyperbolic graph convolution layer.
+    """
+
+    def __init__(self, manifold, in_features, out_features, c_in, dropout, act, use_bias, flag):
+        super(NewHyperbolicGraphConvolution, self).__init__()
+        self.linear = LinearGCN(in_features, out_features)
+        self.agg = MobiusAdd(manifold, c_in, out_features, use_bias)
+        self.hyp_act = NewHypAct(act, dropout, out_features, flag)
+
+    def forward(self, entering):
+        x, adj = entering
+
+        h = self.linear.forward(x, adj)
+        h = self.agg.forward(h)
+        h = self.hyp_act.forward(h)
+        
+        output = h, adj
+        return output
+
+class LinearGCN(nn.Module):
+    def __init__(self, in_features, out_features):
+        super(LinearGCN, self).__init__()
+        self.in_features = in_features
+        self.out_features = out_features
+        self.weight = nn.Parameter(torch.Tensor(out_features, in_features))
+        self.reset_parameters()
+
+    def reset_parameters(self):
+        init.xavier_uniform_(self.weight, gain=math.sqrt(2))
+
+    def forward(self, h, adj):
+        # y=D^-1*Adj*H
+        y = torch.spmm(adj, h)
+        # y*W^T
+        res = F.linear(input=y, weight=self.weight, bias=None) 
+        return res
+    
+class MobiusAdd(nn.Module):
+    def __init__(self, manifold, out_features, c_in, use_bias):
+        super(MobiusAdd, self).__init__()
+        self.manifold = manifold
+        self.use_bias = use_bias
+        self.bias = nn.Parameter(torch.Tensor(out_features)) 
+        self.c = c_in
+    
+    def reset_parameters(self):
+        init.constant_(self.bias, 0)
+
+    def forward(self, h):
+        # exp_0(D^-1*Adj*H*W^T)
+        h_hyp = self.manifold.expmap0(u=h, c=self.c)
+        h_hyp = self.manifold.proj(x=h_hyp, c=self.c)
+
+        # h_hyp \oplus exp0(bias)
+        if self.use_bias:
+            hyp_bias = self.manifold.expmap0(self.bias.view(1, -1), self.c)
+            hyp_bias = self.manifold.proj(hyp_bias, self.c)
+            res = self.manifold.mobius_add(h_hyp, hyp_bias, c=self.c)
+            res = self.manifold.proj(res, self.c)
+
+        res = self.manifold.logmap0(p=res, c=self.c)
+        return res
+
+class NewHypAct(nn.Module):
+    def __init__(self, act, dropout, out_features, flag):
+        super(NewHypAct, self).__init__()
+        self.batch_norm = nn.BatchNorm1d(out_features)
+        self.dropout = nn.Dropout(dropout)
+        self.flag = flag
+        if act == F.leaky_relu:
+            self.act = lambda x: F.leaky_relu(x, negative_slope=0.1)
+        else:
+            self.act = act
+
+    def forward(self, x):
+        if self.flag:
+            x_norm = self.batch_norm(x)
+            x_norm = self.act(x_norm)
+            x_residual = x+x_norm
+            res = self.dropout(x_residual)
+        else:
+            res = self.dropout(x)
+        return res

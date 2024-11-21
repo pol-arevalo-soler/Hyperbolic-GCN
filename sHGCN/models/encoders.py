@@ -99,15 +99,33 @@ class HGCN(Encoder):
         self.curvatures.append(self.c)
         hgc_layers = []
 
-        for i in range(len(dims) - 1):
+        for i in range(len(dims) - 2):
             c_in, c_out = self.curvatures[i], self.curvatures[i + 1]
             in_dim, out_dim = dims[i], dims[i + 1]
             act = acts[i]
+            '''
             hgc_layers.append(
                     hyp_layers.HyperbolicGraphConvolution(
                             self.manifold, in_dim, out_dim, c_in, args.dropout, act, args.bias
                     )
             )
+            '''
+            hgc_layers.append(
+                hyp_layers.NewHyperbolicGraphConvolution(
+                    self.manifold, in_dim, out_dim, c_in, args.dropout, act, args.bias, 1
+                )
+            )
+        i = i+1
+        c_in, c_out = self.curvatures[i], self.curvatures[i + 1]
+        in_dim, out_dim = dims[i], dims[i + 1]
+        act = acts[i]
+
+        hgc_layers.append(
+            hyp_layers.NewHyperbolicGraphConvolution(
+                self.manifold, in_dim, out_dim, c_in, args.dropout, act, args.bias, 0
+            )
+        )
+
         self.layers = nn.Sequential(*hgc_layers)
         self.encode_graph = True
 
