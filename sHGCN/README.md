@@ -26,6 +26,8 @@ Metrics are printed at the end of training or can be saved in a directory by add
 
 ### 3.1 Training sHGCN
 
+All Bash scripts required for the project are located in the `scripts` folder. 
+
 #### Link prediction
 
 * Disease (Test ROC-AUC = 94.6 $\pm$ 0.6): \

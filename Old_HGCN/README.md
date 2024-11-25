@@ -40,6 +40,8 @@ For example: \
 
 ### 4.1 Training HGCN-AGG<sub>0</sub>
 
+All Bash scripts required for the project are located in the `scripts` folder. 
+
 #### Link prediction
 
 * Disease (TEST ROC-AUC = 81.6 $\pm$ 7.5): \
@@ -68,7 +70,7 @@ For example: \
 To train train a HGCN node classification model on Pubmed dataset, pre-train embeddings for link prediction as decribed above. Then train a MLP classifier using the pre-trained embeddings (```embeddings.npy``` file saved in the ```save-dir``` directory) using the Shallow model:
 
 First pre-train embeddings using ```lp``` task: \
-```python3 train.py --task lp --dataset pubmed --model HGCN --lr 0.01 --dim 16 --num-layers 3 --act relu --bias 1 --dropout 0.4 --weight-decay 0.0001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save 1 --save-dir None```
+```python3 train.py --task lp --dataset pubmed --model HGCN --lr 0.01 --dim 16 --num-layers 2 --act relu --bias 1 --dropout 0.4 --weight-decay 0.0001 --manifold PoincareBall --log-freq 5 --cuda 0 --c None --r 2.0 --t 1.0 --save 1 --save-dir None```
 
 
 Then we can perform the Node Classification task using the ```Shallow``` model.
