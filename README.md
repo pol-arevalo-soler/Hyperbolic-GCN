@@ -21,7 +21,9 @@ Before cloning the repository, ensure that you have the following installed on y
 
 * Git : A version control system to manage your source code. You can download and install Git from the official [Git website](https://git-scm.com/downloads).
 
-```git@github.com:pol-arevalo-soler/Hyperbolic-GCN.git```
+Once Git is installed, you can proceed to clone the GitHub repository:
+
+```git clone git@github.com:pol-arevalo-soler/Hyperbolic-GCN.git```
 
 ```cd Hyperbolic-GCN```
 
@@ -55,7 +57,7 @@ Alternatively, if you prefer to install dependencies using `pip`, follow the ste
 
 ```pip install -r requirements.txt```
 
-### 2.4 Folder structure
+### 2.4 Project structure
 
 This project contains two main folders:
 
@@ -78,7 +80,7 @@ To run this code on new datasets, please add corresponding data processing and l
 
 ### 3.1 ```set_env.sh```
 
-Before training, run  ```source set_env.sh```
+Before training, open one of the 2 folders and run  ```source set_env.sh```
 
 This will create environment variables that are used in the code.
 
